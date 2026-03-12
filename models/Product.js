@@ -35,7 +35,13 @@ const productSchema = new mongoose.Schema(
       min: 0
     },
 
-   
+     // NUEVO PRECIO POR TALLE
+
+      pricesBySize: {
+      type: Object,
+      default: null
+      },
+
 
     sizes: {
       type: [String],

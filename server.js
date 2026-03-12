@@ -1,7 +1,15 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://desingcasper.netlify.app"
+    ],
+    credentials: true
+  })
+);
 require("dotenv").config();
 
 const app = express();

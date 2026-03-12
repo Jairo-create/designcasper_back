@@ -29,6 +29,19 @@ function parseBool(v) {
   return false;
 }
 
+// precio por talle
+function parsePricesBySize(v) {
+  if (!v) return null;
+
+  if (typeof v === "object") return v;
+
+  try {
+    return JSON.parse(v);
+  } catch (e) {
+    throw new Error("pricesBySize no es JSON válido");
+  }
+}
+
 function parseImagesByColor(v) {
   if (!v) return {};
   if (typeof v === "object") return v;
@@ -57,6 +70,28 @@ function validateRow(row, rowIndex) {
   const pr = Number(row.priceRetail);
   if (Number.isNaN(pw) || pw < 0) errors.push("priceWholesale inválido");
   if (Number.isNaN(pr) || pr < 0) errors.push("priceRetail inválido");
+
+   if (row.pricesBySize) {
+  try {
+    const prices = parsePricesBySize(row.pricesBySize)
+
+    Object.entries(prices).forEach(([size, price]) => {
+      if (typeof price.retail !== "number") {
+        errors.push(`pricesBySize.${size}.retail inválido`)
+      }
+
+      if (typeof price.wholesale !== "number") {
+        errors.push(`pricesBySize.${size}.wholesale inválido`)
+      }
+    })
+
+  } catch (e) {
+    errors.push(e.message)
+  }
+}
+  
+
+
 
   if (row.imagesByColor) {
     try {
@@ -112,6 +147,7 @@ async function importFromExcel() {
         sizes: parseList(row.sizes),
         colors: parseList(row.colors),
         imagesByColor: parseImagesByColor(row.imagesByColor),
+        pricesBySize: parsePricesBySize(row.pricesBySize),
         isNew: parseBool(row.isNew),
         isPromo: parseBool(row.isPromo),
       };

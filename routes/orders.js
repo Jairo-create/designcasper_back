@@ -60,6 +60,8 @@ const buildHTML = (customer, items, total, orderNumber) => {
       <h2>Confirmación de Pedido</h2>
       <p>Hola <strong>${customer.name}</strong></p>
       <p>Pedido N° <strong>${orderNumber}</strong></p>
+      <p><strong>Dirección de envío:</strong> ${customer.address}</p>
+      <p><strong>Ciudad:</strong> ${customer.city}</p>
 
      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:20px;">
        <tr style="background:#111; color:white;">
@@ -114,6 +116,8 @@ const buildHTML = (customer, items, total, orderNumber) => {
   doc.fontSize(12).text(`Cliente: ${customer.name}`);
   doc.text(`Email: ${customer.email}`);
   doc.text(`Teléfono: ${customer.phone}`);
+  doc.text(`Dirección de envío: ${customer.address}`);
+  doc.text(`Ciudad: ${customer.city}`);
 
   doc.moveDown(2);
 
@@ -186,9 +190,8 @@ router.post("/checkout", async (req, res) => {
         return res.status(404).json({ message: "Producto no encontrado" });
       }
 
-      const unitPriceApplied = isWholesale
-        ? product.priceWholesale
-        : product.priceRetail;
+      const unitPriceApplied = item.unitPriceApplied;
+       
 
       const subtotal = unitPriceApplied * item.quantity;
 
@@ -228,6 +231,8 @@ router.post("/checkout", async (req, res) => {
     );
 
     const html = buildHTML(customer, normalizedItems, totalCalculated, orderNumber);
+
+    
 
     // 📩 MAIL EMPRESA
     await transporter.sendMail({

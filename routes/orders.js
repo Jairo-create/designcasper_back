@@ -100,41 +100,54 @@ width="90"
 
 /* ================== PDF ================== */
 
-const createPDF = async (orderData, pdfPath) => {
+const createPDF = (orderData, pdfPath) => {
+  return new Promise((resolve, reject) => {
 
-  const doc = new PDFDocument({ margin: 50 });
-  doc.pipe(fs.createWriteStream(pdfPath));
+    const doc = new PDFDocument({ margin: 50 });
 
-  const { customer, items, total, orderNumber } = orderData;
+    const stream = fs.createWriteStream(pdfPath);
 
-  doc.fontSize(18).text("Comprobante de Pedido");
-  doc.moveDown();
+    doc.pipe(stream);
 
-  doc.fontSize(12).text(`Pedido: ${orderNumber}`);
-  doc.text(`Cliente: ${customer.name}`);
-  doc.text(`Email: ${customer.email}`);
-  doc.text(`Teléfono: ${customer.phone}`);
-  doc.text(`Dirección: ${customer.address}`);
-  doc.text(`Ciudad: ${customer.city}`);
+    const { customer, items, total, orderNumber } = orderData;
 
-  doc.moveDown();
+    doc.fontSize(18).text("Comprobante de Pedido");
+    doc.moveDown();
 
-  for (const item of items) {
-
-    doc.text(`${item.name}`);
-    doc.text(`Talle: ${item.size}`);
-    doc.text(`Cantidad: ${item.quantity}`);
-    doc.text(`Unitario: $${item.unitPriceApplied}`);
-    doc.text(`Subtotal: $${item.subtotal}`);
+    doc.fontSize(12).text(`Pedido: ${orderNumber}`);
+    doc.text(`Cliente: ${customer.name}`);
+    doc.text(`Email: ${customer.email}`);
+    doc.text(`Teléfono: ${customer.phone}`);
+    doc.text(`Dirección: ${customer.address}`);
+    doc.text(`Ciudad: ${customer.city}`);
 
     doc.moveDown();
-  }
 
-  doc.moveDown();
+    for (const item of items) {
 
-  doc.fontSize(14).text(`TOTAL: $${total}`);
+      doc.text(`${item.name}`);
+      doc.text(`Talle: ${item.size}`);
+      doc.text(`Cantidad: ${item.quantity}`);
+      doc.text(`Unitario: $${item.unitPriceApplied}`);
+      doc.text(`Subtotal: $${item.subtotal}`);
 
-  doc.end();
+      doc.moveDown();
+    }
+
+    doc.moveDown();
+    doc.fontSize(14).text(`TOTAL: $${total}`);
+
+    doc.end();
+
+    stream.on("finish", () => {
+      resolve();
+    });
+
+    stream.on("error", (err) => {
+      reject(err);
+    });
+
+  });
 };
 
 

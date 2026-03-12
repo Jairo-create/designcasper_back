@@ -31,9 +31,12 @@ router.get("/", async (req, res) => {
     const products = await Product.find(filter);
     res.json(products);
   } catch (err) {
-    console.error("Error al obtener productos:", err);
-    res.status(500).json({ message: "Error al obtener productos" });
-  }
+  console.error("Error al obtener productos:", err);
+  res.status(500).json({
+    message: "Error al obtener productos",
+    error: err.message
+  });
+}
 });
 
 /* ===== PRODUCTO POR ID ===== */

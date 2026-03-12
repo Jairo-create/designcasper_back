@@ -249,7 +249,7 @@ router.post("/checkout", async (req, res) => {
 
     await resend.emails.send({
 
-      from: `Casper <${process.env.EMAIL}>`,
+      from: "Casper <onboarding@resend.dev>",
 
       to: "casperdisenos@gmail.com",
 
@@ -270,7 +270,7 @@ router.post("/checkout", async (req, res) => {
 
     await resend.emails.send({
 
-      from: `Casper <${process.env.EMAIL}>`,
+      from: "Casper <onboarding@resend.dev>",
 
       to: customer.email,
 

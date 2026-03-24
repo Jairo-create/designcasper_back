@@ -15,7 +15,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://desingcasper.netlify.app"
+      "https://desingcasper.netlify.app",
+      "http://192.168.0.8:5173"
     ],
     credentials: true
   })

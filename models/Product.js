@@ -8,6 +8,13 @@ const productSchema = new mongoose.Schema(
       trim: true
     },
 
+    // Descripción técnica del producto
+    description: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
     category: {
       type: String,
       required: true,
@@ -35,13 +42,11 @@ const productSchema = new mongoose.Schema(
       min: 0
     },
 
-     // NUEVO PRECIO POR TALLE
-
+     // PRECIO POR TALLE
       pricesBySize: {
       type: Object,
       default: null
       },
-
 
     sizes: {
       type: [String],
@@ -74,4 +79,3 @@ const productSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Product", productSchema);
-

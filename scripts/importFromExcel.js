@@ -71,27 +71,24 @@ function validateRow(row, rowIndex) {
   if (Number.isNaN(pw) || pw < 0) errors.push("priceWholesale inválido");
   if (Number.isNaN(pr) || pr < 0) errors.push("priceRetail inválido");
 
-   if (row.pricesBySize) {
-  try {
-    const prices = parsePricesBySize(row.pricesBySize)
+  if (row.pricesBySize) {
+    try {
+      const prices = parsePricesBySize(row.pricesBySize)
 
-    Object.entries(prices).forEach(([size, price]) => {
-      if (typeof price.retail !== "number") {
-        errors.push(`pricesBySize.${size}.retail inválido`)
-      }
+      Object.entries(prices).forEach(([size, price]) => {
+        if (typeof price.retail !== "number") {
+          errors.push(`pricesBySize.${size}.retail inválido`)
+        }
 
-      if (typeof price.wholesale !== "number") {
-        errors.push(`pricesBySize.${size}.wholesale inválido`)
-      }
-    })
+        if (typeof price.wholesale !== "number") {
+          errors.push(`pricesBySize.${size}.wholesale inválido`)
+        }
+      })
 
-  } catch (e) {
-    errors.push(e.message)
+    } catch (e) {
+      errors.push(e.message)
+    }
   }
-}
-  
-
-
 
   if (row.imagesByColor) {
     try {
@@ -140,6 +137,8 @@ async function importFromExcel() {
       // Normalización
       const product = {
         name: String(row.name).trim(),
+        // 🔥 NUEVO CAMPO: Capturamos la descripción. Si no existe en el Excel, queda vacío.
+        description: row.description ? String(row.description).trim() : "", 
         category: normalizeString(row.category),
         gender: normalizeString(row.gender),
         priceWholesale: Number(row.priceWholesale),

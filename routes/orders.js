@@ -9,6 +9,7 @@ const resend = require("../utils/mailer");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
+const xlsx = require("xlsx");
 
 /* ================== HTML EMAIL ================== */
 
@@ -300,5 +301,58 @@ router.post("/checkout", async (req, res) => {
   }
 
 });
+
+/* ================== EXPORTAR PEDIDOS DE LOS CLIENTES A EXCEL ================== */
+
+router.get("/export", async (req, res) => {
+  try {
+    // 1. Buscamos todas las órdenes en la base de datos, de la más reciente a la más antigua
+    const orders = await Order.find().sort({ createdAt: -1 });
+
+    // 2. Mapeamos (transformamos) los datos complejos en un formato plano ideal para Excel
+    const excelData = orders.map(order => {
+      // Unimos todos los productos comprados en un solo texto fácil de leer
+      const itemsString = order.items
+        .map(i => `${i.quantity}x ${i.name} (Talle: ${i.size}, Color: ${i.color})`)
+        .join(" | ");
+
+      return {
+        "N° Pedido": order.orderNumber,
+        "Fecha": new Date(order.createdAt).toLocaleDateString("es-AR"),
+        "Hora": new Date(order.createdAt).toLocaleTimeString("es-AR"),
+        "Nombre Cliente": order.customer.name,
+        "Teléfono": order.customer.phone,
+        "Email": order.customer.email,
+        "Dirección": order.customer.address,
+        "Ciudad": order.customer.city,
+        "Total Pagado ($)": order.total,
+        "Tipo de Compra": order.isWholesale ? "Mayorista" : "Detal",
+        "Productos": itemsString
+      };
+    });
+
+    // 3. Creamos el archivo Excel en la memoria (Buffer)
+    const worksheet = xlsx.utils.json_to_sheet(excelData);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "Pedidos");
+
+    const excelBuffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+    // 4. Configuramos la respuesta para que el navegador inicie una descarga
+    res.setHeader("Content-Disposition", "attachment; filename=Pedidos_Casper.xlsx");
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    
+    // 5. Enviamos el archivo
+    res.send(excelBuffer);
+
+  } catch (error) {
+    console.error("Error al exportar a Excel:", error);
+    res.status(500).json({ message: "Error al generar el archivo Excel" });
+  }
+});
+
+//Solo tienes que abrir una pestaña en tu navegador y escribir para descargar los pedidos en EXCEL:
+https://designcasper-back.onrender.com/api/orders/export //
+
 
 module.exports = router;

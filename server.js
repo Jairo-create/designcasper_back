@@ -18,7 +18,9 @@ app.use(
       "https://desingcasper.netlify.app",
       "http://192.168.0.8:5173",
       "https://dcasper.co",
-      "https://www.dcasper.co"
+      "https://www.dcasper.co",
+      "http://dcasper.co",
+      "http://www.dcasper.co",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true

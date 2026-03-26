@@ -250,7 +250,7 @@ router.post("/checkout", async (req, res) => {
 
     await resend.emails.send({
 
-      from: "Casper <onboarding@resend.dev>",
+      from: "Casper Diseños <contacto@dcasper.co>",
 
       to: "casperdisenos@gmail.com",
 
@@ -271,7 +271,7 @@ router.post("/checkout", async (req, res) => {
 
     await resend.emails.send({
 
-      from: "Casper <onboarding@resend.dev>",
+      from: "Casper Diseños <contacto@dcasper.co>",
 
       to: customer.email,
 

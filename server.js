@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const contactRoutes = require('./routes/contact');
 const app = express();
 
 /* =========================
@@ -38,6 +38,7 @@ app.use("/api/orders", require("./routes/orders"));
 app.use("/images", express.static("public/images"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/auth", require("./routes/auth"));
+app.use('/api/contact', contactRoutes);
 
 /* =========================
    BASE DE DATOS

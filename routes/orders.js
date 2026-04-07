@@ -321,8 +321,8 @@ router.get("/export", async (req, res) => {
 
       return {
         "N° Pedido": order.orderNumber,
-        "Fecha": new Date(order.createdAt).toLocaleDateString("es-AR"),
-        "Hora": new Date(order.createdAt).toLocaleTimeString("es-AR"),
+        "Fecha": new Date(order.createdAt).toLocaleDateString("es-CO", timeZoneConfig),
+        "Hora": new Date(order.createdAt).toLocaleTimeString("es-CO", timeZoneConfig),
         "Nombre Cliente": order.customer.name,
         "Teléfono": order.customer.phone,
         "Email": order.customer.email,

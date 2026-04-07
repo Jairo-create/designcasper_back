@@ -316,6 +316,9 @@ router.get("/export", async (req, res) => {
         .map(i => `${i.quantity}x ${i.name} (Talle: ${i.size}, Color: ${i.color})`)
         .join(" | ");
 
+      //  LÓGICA DE TIEMPO: Forzamos la zona horaria de Colombia y el formato local
+      const timeZoneConfig = { timeZone: "America/Bogota" };
+
       return {
         "N° Pedido": order.orderNumber,
         "Fecha": new Date(order.createdAt).toLocaleDateString("es-AR"),

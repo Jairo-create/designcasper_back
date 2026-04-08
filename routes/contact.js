@@ -5,10 +5,10 @@ const resend = require("../utils/mailer"); // Importamos Resend igual que en las
 
 router.post("/", async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, phone, message } = req.body;
 
     // Validación básica en el servidor
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !message) {
       return res.status(400).json({ message: "Faltan datos requeridos" });
     }
 
@@ -25,6 +25,7 @@ router.post("/", async (req, res) => {
           </h2>
           <p><strong>Nombre:</strong> ${name}</p>
           <p><strong>Email del cliente:</strong> ${email}</p>
+          <p><strong>Teléfono/WhatsApp:</strong> ${phone}</p> 
           <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #000; margin-top: 20px;">
             <p style="margin: 0;"><strong>Mensaje:</strong></p>
             <p style="white-space: pre-wrap;">${message}</p>

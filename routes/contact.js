@@ -1,22 +1,30 @@
-
 const express = require("express");
 const router = express.Router();
-const resend = require("../utils/mailer"); // Importamos Resend igual que en las órdenes
+const resend = require("../utils/mailer");
+const multer = require("multer"); // 🔥 1. Importamos la nueva herramienta
 
-router.post("/", async (req, res) => {
+//  2. Configuramos multer para leer el archivo en la memoria RAM (sin guardarlo en disco)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // Límite estricto de 5MB por seguridad del servidor
+});
+
+// 3. Añadimos el middleware "upload.single('attachment')" a la ruta
+// Esto le dice a Express que intercepte un archivo llamado "attachment" antes de ejecutar tu código
+router.post("/", upload.single("attachment"), async (req, res) => {
   try {
-    const { name, email, phone, message } = req.body;
+    const { name, email, phone, message } = req.body; // Multer ya separó los textos aquí
 
-    // Validación básica en el servidor
+    // Validación básica
     if (!name || !email || !phone || !message) {
       return res.status(400).json({ message: "Faltan datos requeridos" });
     }
 
-    /* ===== EMAIL DE CONTACTO ===== */
-    await resend.emails.send({
-      from: "Casper Diseños <contacto@dcasper.co>", // Debe salir desde tu dominio verificado
-      to: "casperdisenos@gmail.com", // La bandeja donde quieres leer el mensaje
-      reply_to: email, // 🔥 CLAVE: Si le das "Responder" en Gmail, le responderá directo al cliente
+    // 4. Preparamos el "paquete" del correo base (sin enviar todavía)
+    const emailData = {
+      from: "Casper Diseños <contacto@dcasper.co>",
+      to: "casperdisenos@gmail.com",
+      reply_to: email, 
       subject: `Nuevo mensaje de la web - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -32,7 +40,20 @@ router.post("/", async (req, res) => {
           </div>
         </div>
       `
-    });
+    };
+
+    //  5. Si el cliente envió un archivo, Multer lo pondrá en "req.file"
+    if (req.file) {
+      emailData.attachments = [
+        {
+          filename: req.file.originalname, // Mantiene el nombre original (ej. "diseño.png")
+          content: req.file.buffer // Resend toma el archivo crudo desde la memoria directamente
+        }
+      ];
+    }
+
+    // 6. Ahora sí, disparamos el correo
+    await resend.emails.send(emailData);
 
     res.json({ ok: true, message: "Correo enviado exitosamente" });
 
